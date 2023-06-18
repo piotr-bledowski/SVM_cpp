@@ -1,0 +1,3 @@
+C:/Users/piotr/OneDrive/Pulpit/studia/PP2/projekt/SVM_cpp/cmake-build-debug/CMakeFiles/svm_showcase.dir
+C:/Users/piotr/OneDrive/Pulpit/studia/PP2/projekt/SVM_cpp/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/piotr/OneDrive/Pulpit/studia/PP2/projekt/SVM_cpp/cmake-build-debug/CMakeFiles/rebuild_cache.dir
