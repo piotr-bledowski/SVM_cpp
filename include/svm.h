@@ -7,8 +7,9 @@
 
 #endif //SVM_CPP_SVM_H
 
+#include <cstdlib> // for rand()
 #include <vector>
-#include <random>
+//#include <random>
 
 const double DELTA = 0.001;
 
@@ -19,19 +20,32 @@ private:
     double lambda;
 public:
     SVM() {
-        offset = 0;
-        lambda = 0;
+        offset = 0.0;
+        lambda = 0.0;
     }
 
     // T - number of iterations
     void fit(std::vector<std::vector<double>> X, std::vector<int> y, int T, double lamb) {
         // SGD
         lambda = lamb;
-
-        for (int t = 1; t <= T; t++) {
-
+        for (int j = 0; j < X[0].size(); j++) {
+            weights.push_back(0.0);
         }
 
+        for (int t = 1; t <= T; t++) {
+            int i = rand() % X.size();
+            std::vector<std::vector<double>> x;
+            x.push_back(X[i]);
+            std::vector<int> yy;
+            yy.push_back(y[i]);
+            std::vector<double> gradient = numericalGradient(x, yy);
+
+            // update weights
+            for (int j = 0; j < weights.size(); j++) {
+                weights[j] -= learningRate(t) * gradient[j];
+            }
+            offset -= learningRate(t) * gradient[gradient.size() - 1];
+        }
     }
 
     int predict(std::vector<double> x) {
