@@ -49,7 +49,10 @@ public:
     }
 
     int predict(std::vector<double> x) {
-
+        double product = std::inner_product(x.begin(), x.end(), weights.begin(), 0.0);
+        if (product > 0)
+            return 1;
+        return -1;
     }
 
     double learningRate(int t) {
