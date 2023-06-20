@@ -177,8 +177,7 @@
 			"name" : "Header Files",
 			"sourceIndexes" : 
 			[
-				1,
-				2
+				1
 			]
 		}
 	],
@@ -193,11 +192,6 @@
 		{
 			"backtrace" : 1,
 			"path" : "include/svm.h",
-			"sourceGroupIndex" : 1
-		},
-		{
-			"backtrace" : 1,
-			"path" : "include/optimization.h",
 			"sourceGroupIndex" : 1
 		}
 	],

@@ -4,10 +4,46 @@
 #include "../include/matplotlibcpp.h"
 #include <iostream>
 #include "svm.h"
+#include "../include/rapidcsv.h"
 
 namespace plt = matplotlibcpp;
 
 int main() {
-    std::cout << "Hello World!" << std::endl;
+    rapidcsv::Document doc("../data.csv");
+    std::vector<int> target = doc.GetColumn<int>("y");
+    size_t n_cols = doc.GetColumnCount();
+    size_t n_features = n_cols - 1;
+    size_t n_rows = doc.GetRowCount();
+
+    std::vector<std::vector<double>> features = std::vector<std::vector<double>>(n_features);
+
+    for (size_t i = 0; i < n_features; i++) {
+        features[i] = doc.GetColumn<double>(i);
+    }
+
+    //std::cout << features[0][0] << " " << features[1][0] << " " << target[0];
+
+    // Gotta separate the positives and negatives for plotting
+    std::vector<double> x1_positives;
+    std::vector<double> x2_positives;
+    std::vector<double> x1_negatives;
+    std::vector<double> x2_negatives;
+
+    for (size_t i = 0; i < n_rows; i++) {
+        if (target[i] == 1) {
+            x1_positives.push_back(features[0][i]);
+            x2_positives.push_back(features[1][i]);
+        }
+        else {
+            x1_negatives.push_back(features[0][i]);
+            x2_negatives.push_back(features[1][i]);
+        }
+    }
+
+    plt::scatter(x1_positives, x2_positives);
+    plt::scatter(x1_negatives, x2_negatives);
+
+    plt::show();
+
     return 0;
 }
