@@ -16,6 +16,13 @@ void plotLine(std::vector<double> x, std::vector<double> w, double intercept, st
     plt::plot(x, y, {{"color", "black"}, {"linestyle", linestyle}});
 }
 
+void plotLine(std::vector<double> x, std::vector<double> w, std::vector<double> x0, std::string linestyle="-") {
+    std::vector<double> y = std::vector<double>(x.size());
+    y[0] = -(w[0] / w[1]) * (x[0] - x0[0]) + x0[1];
+    y[1] = -(w[0] / w[1]) * (x[1] - x0[0]) + x0[1];
+    plt::plot(x, y, {{"color", "black"}, {"linestyle", linestyle}});
+}
+
 void plotSVM(SVM model, std::vector<std::vector<double>> features, std::vector<int> target) {
     //std::cout << features[0][0] << " " << features[1][0] << " " << target[0];
 
@@ -52,6 +59,9 @@ void plotSVM(SVM model, std::vector<std::vector<double>> features, std::vector<i
     std::cout << w[0] << " " << w[1] << " " << b << "\n";
 
     plotLine(x, w, b);
+
+    plotLine(x, w, model.getMinSupport(), "--");
+    plotLine(x, w, model.getMaxSupport(), "--");
 
     plt::show();
 }

@@ -31,6 +31,8 @@ public:
         offset = 0.0;
         lambda = 0.0;
         plot = p;
+        min_dist = 10000000;
+        max_dist = -10000000;
     }
 
     std::vector<double> getW() {
@@ -88,7 +90,7 @@ public:
         if (plot) { // if plot is true, we assume the data is 2D
             for (int i = 0; i < y.size(); i++) {
                 std::vector<double> x = {X[0][i], X[1][i]};
-                if (hingeLoss(x, y[i], weights, offset) <= 1) {
+                if (hingeLoss(x, y[i], weights, offset) > 0) {
                     supportVectors.push_back(x);
                     double dist = std::inner_product(x.begin(), x.end(), weights.begin(), 0.0);
                     if (dist < min_dist) {
