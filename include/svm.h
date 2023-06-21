@@ -12,6 +12,7 @@
 #include <numeric>
 //#include <random>
 
+// for numerical gradient estimation
 const double DELTA = 0.001;
 
 class SVM {
@@ -20,12 +21,44 @@ private:
     double offset;
     double lambda;
     std::vector<std::vector<double>> supportVectors;
+    std::vector<double> maxSupport;
+    std::vector<double> minSupport;
+    double min_dist;
+    double max_dist;
     bool plot;
 public:
     SVM(bool p) {
         offset = 0.0;
         lambda = 0.0;
         plot = p;
+    }
+
+    std::vector<double> getW() {
+        return weights;
+    }
+
+    double getB() {
+        return offset;
+    }
+
+    std::vector<std::vector<double>> getSupportVectors() {
+        return supportVectors;
+    }
+
+    std::vector<double> getMaxSupport() {
+        return maxSupport;
+    }
+
+    std::vector<double> getMinSupport() {
+        return minSupport;
+    }
+
+    double getMaxDist() {
+        return max_dist;
+    }
+
+    double getMinDist() {
+        return min_dist;
     }
 
     // T - number of iterations
@@ -53,22 +86,22 @@ public:
 
         // determine the support vectors
         if (plot) { // if plot is true, we assume the data is 2D
-            double max_dist = 0.0;
-            double min_dist = 0.0;
-
             for (int i = 0; i < y.size(); i++) {
                 std::vector<double> x = {X[0][i], X[1][i]};
                 if (hingeLoss(x, y[i], weights, offset) <= 1) {
                     supportVectors.push_back(x);
                     double dist = std::inner_product(x.begin(), x.end(), weights.begin(), 0.0);
-                    if (dist < min_dist)
+                    if (dist < min_dist) {
                         min_dist = dist;
-                    if (dist > max_dist)
+                        minSupport = x;
+                    }
+                    if (dist > max_dist) {
                         max_dist = dist;
+                        maxSupport = x;
+                    }
                 }
             }
         }
-
     }
 
     int predict(std::vector<double> x) {
