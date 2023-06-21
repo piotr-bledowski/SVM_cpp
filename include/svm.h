@@ -9,6 +9,7 @@
 
 #include <cstdlib> // for rand()
 #include <vector>
+#include <numeric>
 //#include <random>
 
 const double DELTA = 0.001;
@@ -18,24 +19,27 @@ private:
     std::vector<double> weights;
     double offset;
     double lambda;
+    std::vector<std::vector<double>> supportVectors;
+    bool plot;
 public:
-    SVM() {
+    SVM(bool p) {
         offset = 0.0;
         lambda = 0.0;
+        plot = p;
     }
 
     // T - number of iterations
     void fit(std::vector<std::vector<double>> X, std::vector<int> y, int T, double lamb) {
-        // SGD
         lambda = lamb;
-        for (int j = 0; j < X[0].size(); j++) {
+        for (int j = 0; j < X.size(); j++) {
             weights.push_back(0.0);
         }
 
+        // SGD
         for (int t = 1; t <= T; t++) {
-            int i = rand() % X.size();
+            int i = rand() % X[0].size();
             std::vector<std::vector<double>> x;
-            x.push_back(X[i]);
+            x.push_back({X[0][i], X[1][i]});
             std::vector<int> yy;
             yy.push_back(y[i]);
             std::vector<double> gradient = numericalGradient(x, yy);
@@ -46,6 +50,25 @@ public:
             }
             offset -= learningRate(t) * gradient[gradient.size() - 1];
         }
+
+        // determine the support vectors
+        if (plot) { // if plot is true, we assume the data is 2D
+            double max_dist = 0.0;
+            double min_dist = 0.0;
+
+            for (int i = 0; i < y.size(); i++) {
+                std::vector<double> x = {X[0][i], X[1][i]};
+                if (hingeLoss(x, y[i], weights, offset) <= 1) {
+                    supportVectors.push_back(x);
+                    double dist = std::inner_product(x.begin(), x.end(), weights.begin(), 0.0);
+                    if (dist < min_dist)
+                        min_dist = dist;
+                    if (dist > max_dist)
+                        max_dist = dist;
+                }
+            }
+        }
+
     }
 
     int predict(std::vector<double> x) {
