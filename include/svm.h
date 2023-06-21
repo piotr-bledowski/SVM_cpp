@@ -112,7 +112,7 @@ public:
     }
 
     double learningRate(int t) {
-        return 1.0 / t;
+        return 10.0 / t;
     }
 
     std::vector<double> numericalGradient(std::vector<std::vector<double>> X, std::vector<int> y) {
