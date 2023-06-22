@@ -9,10 +9,10 @@
 namespace plt = matplotlibcpp;
 
 void plotLine(std::vector<double> x, std::vector<double> w, double intercept, std::string linestyle="-") {
-    std::vector<double> x0 = {0, -intercept / w[1]};
+    std::vector<double> x0 = {0, intercept / w[1]};
     std::vector<double> y = std::vector<double>(x.size());
-    y[0] = -(w[0] / w[1]) * (x[0] - x0[0]) - x0[1];
-    y[1] = -(w[0] / w[1]) * (x[1] - x0[0]) - x0[1];
+    y[0] = -(w[0] / w[1]) * (x[0] - x0[0]) + x0[1];
+    y[1] = -(w[0] / w[1]) * (x[1] - x0[0]) + x0[1];
     plt::plot(x, y, {{"color", "black"}, {"linestyle", linestyle}});
 }
 
@@ -43,16 +43,23 @@ void plotSVM(SVM model, std::vector<std::vector<double>> features, std::vector<i
         }
     }
 
+    int x1_lower_bound, x1_upper_bound, x2_lower_bound, x2_upper_bound;
+
+    x1_lower_bound = (int) *std::min_element(features[0].begin(), features[0].end()) - 1;
+    x1_upper_bound = (int) *std::max_element(features[0].begin(), features[0].end()) + 1;
+    x2_lower_bound = (int) *std::min_element(features[1].begin(), features[1].end()) - 1;
+    x2_upper_bound = (int) *std::max_element(features[1].begin(), features[1].end()) + 1;
+
     plt::figure();
 
-    plt::xlim(0, 25);
-    plt::ylim(0, 25);
+    plt::xlim(x1_lower_bound, x1_upper_bound);
+    plt::ylim(x2_lower_bound, x2_upper_bound);
 
     plt::scatter(x1_positives, x2_positives, {{"c", "blue"}});
     plt::scatter(x1_negatives, x2_negatives, {{"c", "red"}});
 
     std::vector<double> w = model.getW();
-    std::vector<double> x = {-1.0, 26.0};
+    std::vector<double> x = {(double) x1_lower_bound, (double) x1_upper_bound};
 
     double b = model.getB();
 
@@ -67,7 +74,26 @@ void plotSVM(SVM model, std::vector<std::vector<double>> features, std::vector<i
 }
 
 int main() {
-    rapidcsv::Document doc("../data.csv");
+    bool plot;
+    int T;
+    float lambda;
+    float learning_rate_coefficient;
+    std::string file_name;
+
+    std::cout << "Provide the name of a file with training data: ";
+    std::cin >> file_name;
+    std::cout << "Do you want to plot the data and resulting classifier? (Only possible with exactly 2 features) [y/n]: ";
+    std::string plot_response;
+    std::cin >> plot_response;
+    plot = plot_response == "y";
+    std::cout << "Choose the learning rate coefficient: ";
+    std::cin >> learning_rate_coefficient;
+    std::cout << "Choose the lambda parameter (how much should the model minimize the margin): ";
+    std::cin >> lambda;
+    std::cout << "Provide the number of learning steps: ";
+    std::cin >> T;
+
+    rapidcsv::Document doc("../" + file_name);
     std::vector<int> target = doc.GetColumn<int>("y");
     size_t n_cols = doc.GetColumnCount();
     size_t n_features = n_cols - 1;
@@ -79,8 +105,8 @@ int main() {
         features[i] = doc.GetColumn<double>(i);
     }
 
-    SVM model(true);
-    model.fit(features, target, 1000, 0.5);
+    SVM model(plot);
+    model.fit(features, target, T, lambda, learning_rate_coefficient);
 
     plotSVM(model, features, target);
 

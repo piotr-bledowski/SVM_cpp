@@ -26,6 +26,7 @@ private:
     double min_dist;
     double max_dist;
     bool plot;
+    double lr_coeff;
 public:
     SVM(bool p) {
         offset = 0.0;
@@ -64,8 +65,10 @@ public:
     }
 
     // T - number of iterations
-    void fit(std::vector<std::vector<double>> X, std::vector<int> y, int T, double lamb) {
+    void fit(std::vector<std::vector<double>> X, std::vector<int> y, int T, double lamb, double lrc) {
         lambda = lamb;
+        lr_coeff = lrc;
+
         for (int j = 0; j < X.size(); j++) {
             weights.push_back(0.0);
         }
@@ -114,7 +117,7 @@ public:
     }
 
     double learningRate(int t) {
-        return 10.0 / t;
+        return lr_coeff / t;
     }
 
     std::vector<double> numericalGradient(std::vector<std::vector<double>> X, std::vector<int> y) {
