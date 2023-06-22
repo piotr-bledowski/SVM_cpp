@@ -63,7 +63,7 @@ void plotSVM(SVM model, std::vector<std::vector<double>> features, std::vector<i
 
     double b = model.getB();
 
-    std::cout << w[0] << " " << w[1] << " " << b << "\n";
+//    std::cout << w[0] << " " << w[1] << " " << b << "\n";
 
     plotLine(x, w, b);
 
@@ -108,7 +108,23 @@ int main() {
     SVM model(plot);
     model.fit(features, target, T, lambda, learning_rate_coefficient);
 
-    plotSVM(model, features, target);
+    if (plot)
+        plotSVM(model, features, target);
+
+    std::string cont;
+    std::cout << "Classify a data point? [y/n]: ";
+    std::cin >> cont;
+
+    while (cont == "y") {
+        std::cout << "Provide the feature values: ";
+        std::vector<double> new_x = std::vector<double>(n_features);
+        for (int i = 0; i < n_features; i++) {
+            std::cin >> new_x[i];
+        }
+        std::cout << "Prediction: " << model.predict(new_x) << std::endl;
+        std::cout << "Classify a data point? [y/n]: ";
+        std::cin >> cont;
+    }
 
     return 0;
 }
